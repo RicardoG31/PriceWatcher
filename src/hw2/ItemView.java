@@ -39,6 +39,7 @@ public class ItemView extends JPanel {
         setBackground(Color.WHITE);
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
+            	System.out.println("Test");
             	if (isViewPageClicked(e.getX(), e.getY()) && listener != null) {
             		listener.clicked();
             	}

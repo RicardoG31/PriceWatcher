@@ -16,6 +16,7 @@ public class ItemRender extends ItemView implements ListCellRenderer<Item> {
     	setItem(item);
     	
     	if (isSelected) {
+    		
             setBackground(list.getSelectionBackground());
             setForeground(list.getSelectionForeground());
             

@@ -36,6 +36,11 @@ public class ListUtils {
 		items.addElement(newItem);
 	}
 	
+	public void updateItem(Item newInfo, int position) {
+		removeItem(position);
+		addItem(newInfo);
+	}
+	
 	//Remove a selected item (position)
 	public void removeItem(int position) {
 		items.remove(position);

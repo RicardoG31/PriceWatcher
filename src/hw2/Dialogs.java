@@ -23,12 +23,12 @@ public class Dialogs {
 	
 	//Add item dialog
 	//Ask user information about the new item to add
-	public static JDialog addItemDialog(JFrame c, ListUtils items) {
+	public static JDialog itemDialog(JFrame c, ListUtils items) {
 		JDialog dialog = new JDialog(c, "Add Item", false);
 		dialog.setSize(new Dimension(300, 200));
 		dialog.setLayout(new BorderLayout());
 		
-		JPanel form = new JPanel(new GridLayout(4, 3));
+		JPanel form = new JPanel(new GridLayout(4,3));
 		
 		JLabel name = new JLabel("Name: ");
 		JTextField nameTextField = new JTextField();  
@@ -37,14 +37,37 @@ public class Dialogs {
 		JLabel price = new JLabel("Price: ");
 		JTextField priceTextField = new JTextField();
 		JLabel group = new JLabel("Group: ");
-		//JTextField groupTextField = new JTextField("Welcome to Javatpoint.");
+		JTextField groupTextField = new JTextField();
+		
+		int position = items.getSelected();
+		if(position >= 0) {
+			Item selectedItem = items.getItem(position);
+			nameTextField.setText(selectedItem.getName());
+			urlTextField.setText(selectedItem.getUrl());
+			priceTextField.setText(Double.toString(selectedItem.getPrice()));
+			//groupTextField.setText(selectedItem.getName());
+		}
+
+		form.add(name); form.add(nameTextField); form.add(url); form.add(urlTextField);
+		form.add(price); form.add(priceTextField); form.add(group); form.add(groupTextField);
 		
 		JPanel buttonsContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton add = new JButton("Add");
 		JButton cancel = new JButton("Cancel");
 		
 		add.addActionListener((event) -> {
-			System.out.println("Item added");
+			String itemName = nameTextField.getText();
+			String itemURL = urlTextField.getText();
+			double itemPrice = Double.parseDouble(priceTextField.getText());
+			//String itemGroup = groupTextField.getText();
+			
+			Item newItem = new Item(itemName, itemPrice, itemPrice, itemURL);
+			if(position >= 0) {
+				items.updateItem(newItem, position);
+			} else {
+				items.addItem(newItem);
+			}
+			dialog.setVisible(false);
 		});
 		
 		cancel.addActionListener((event) -> {
@@ -52,22 +75,12 @@ public class Dialogs {
 		});
 		
 		buttonsContainer.add(add); buttonsContainer.add(cancel);
-		
-		form.add(name); form.add(nameTextField); form.add(url); 
-		form.add(urlTextField); form.add(price); form.add(priceTextField); 
-		form.add(group);
-		
+
 		dialog.add(form, BorderLayout.CENTER);
 		dialog.add(buttonsContainer, BorderLayout.SOUTH);
 		
 		return dialog;
 		
-	}
-	
-	//Update item dialog
-	//Update the selected item
-	public static JDialog updateItemDialog(JFrame c, Item item) {
-	
 	}
 	
 	//Search item dialog

@@ -1,15 +1,13 @@
 package hw2;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -17,6 +15,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 /**
@@ -31,6 +30,7 @@ public class Main extends JFrame {
     private final static Dimension DEFAULT_SIZE = new Dimension(400, 600);
     
     /*Components*/
+    CustomPopupMenu popMenu;
     CustomMenubar menu;
     CustomToolbar toolbar;
     JPanel contentContainer;
@@ -64,7 +64,7 @@ public class Main extends JFrame {
     //Show a dialog that will ask user information
     //about a new item to add to the list
     ActionListener addItem = (event) -> {
-    	dialog = Dialogs.addItemDialog(this, items);
+    	dialog = Dialogs.itemDialog(this, items);
     	dialog.setVisible(true);
     };
     
@@ -102,13 +102,7 @@ public class Main extends JFrame {
     	int position = items.getSelected();
     	if(position>=0) {
     		Item selectedItem = items.getItem(position);
-        	Desktop d = Desktop.getDesktop();
-    		try {
-    			d.browse(new URI(selectedItem.getUrl()));
-    		} catch (IOException | URISyntaxException e1) {
-    			// TODO Auto-generated catch block
-    			e1.printStackTrace();
-    		}
+        	selectedItem.launchBrowser();
     	} else {
     		showMessage("A item must be selected");
     	}
@@ -118,8 +112,8 @@ public class Main extends JFrame {
     ActionListener editItem = (event) -> {
     	int position = items.getSelected();
     	if(position>=0) {
-    		//dialog = Dialogs.updateItemDialog(this, items);
-    		//dialog.setVisible(true);
+    		dialog = Dialogs.itemDialog(this, items);
+    		dialog.setVisible(true);
     	} else {
     		showMessage("A item must be selected");
     	}
@@ -183,10 +177,26 @@ public class Main extends JFrame {
     private void configureUI() {
         setLayout(new BorderLayout());
         
+        setPopupMenu();
         createMenubar();
         createToolbar();
         createContentContainer();
         createMsgBar();
+    }
+    
+    //Set up popupmenu
+    private void setPopupMenu() {
+    	popMenu = new CustomPopupMenu(this);
+    	
+    	JPopupMenu menu = popMenu.getCustomPopupMenu();
+    	
+    	addMouseListener(new MouseAdapter() {
+    		public void mouseClicked(MouseEvent e) {
+    			menu.show(e.getComponent(), e.getX(), e.getY());
+    		}
+    	});
+    	
+    	add(menu);
     }
     
     //Creates a custom menubar
