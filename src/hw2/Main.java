@@ -1,23 +1,22 @@
 package hw2;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
 /**
@@ -32,8 +31,8 @@ public class Main extends JFrame {
     private final static Dimension DEFAULT_SIZE = new Dimension(400, 600);
     
     /*Components*/
-    JMenuBar menu;
-    Toolbar toolbar;
+    CustomMenubar menu;
+    CustomToolbar toolbar;
     JPanel contentContainer;
     JDialog dialog;
       
@@ -43,6 +42,124 @@ public class Main extends JFrame {
     ListUtils items;
     
     Item testItem = new Item("Macbook Pro", 2999.99, 2999.99, "http//google.com");
+    
+    //Actions performed in the UI
+    
+    
+    //Show more information about the app
+    ActionListener aboutApp = (event) -> {
+    	Dialogs.aboutDialog(this);
+    };
+    
+    //Close the app
+    ActionListener exitApp = (event) -> {
+    	System.exit(0); 
+    };
+    
+    //Update Prices of List of Items
+    ActionListener checkPrices = (event) -> {
+    	items.updatePrices();
+    };
+    
+    //Show a dialog that will ask user information
+    //about a new item to add to the list
+    ActionListener addItem = (event) -> {
+    	dialog = Dialogs.addItemDialog(this, items);
+    	dialog.setVisible(true);
+    };
+    
+    //Show a dialog that will ask user for a term
+    //then, app will show items that contain that term
+    ActionListener searchItem = (event) -> {
+    	dialog = Dialogs.searchItemDialog(this, items);
+    	dialog.setVisible(true);
+    };
+    
+    //Select first item of the list
+    ActionListener firstItem = (event) -> {
+    	items.setSelected(0);
+    };
+    
+    //Select last item of the list
+    ActionListener lastItem = (event) -> {
+    	items.setSelected(items.getSize()-1);
+    };
+    
+    //Update price of selected item
+    ActionListener checkItemPrice = (event) -> {
+    	int position = items.getSelected();
+    	if(position>=0) {
+    		Item selectedItem = items.getItem(position);
+        	selectedItem.updatePrice();
+    	} else {
+    		showMessage("A item must be selected");
+    	}
+    	
+    };
+    
+    //Open browser to watch selected item
+    ActionListener viewItem = (event) -> {
+    	int position = items.getSelected();
+    	if(position>=0) {
+    		Item selectedItem = items.getItem(position);
+        	Desktop d = Desktop.getDesktop();
+    		try {
+    			d.browse(new URI(selectedItem.getUrl()));
+    		} catch (IOException | URISyntaxException e1) {
+    			// TODO Auto-generated catch block
+    			e1.printStackTrace();
+    		}
+    	} else {
+    		showMessage("A item must be selected");
+    	}
+    };
+    
+    //Edit selected item
+    ActionListener editItem = (event) -> {
+    	int position = items.getSelected();
+    	if(position>=0) {
+    		//dialog = Dialogs.updateItemDialog(this, items);
+    		//dialog.setVisible(true);
+    	} else {
+    		showMessage("A item must be selected");
+    	}
+    };
+    
+    //Remove selected Item
+    ActionListener removeItem = (event) -> {
+    	int position = items.getSelected();
+    	if(position>=0) {
+    		Dialogs.confirmRemoveDialog(this, items);
+    	} else {
+    		showMessage("A item must be selected");
+    	}
+    };
+    
+    //Get to clipboard name of selected item
+    ActionListener copyName = (event) -> {
+    	int position = items.getSelected();
+    	if(position >= 0) {
+    		Item selectedItem = items.getItem(position);
+        	StringSelection selection = new StringSelection(selectedItem.getName());
+        	Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        	clipboard.setContents(selection, selection);
+    	} else {
+    		showMessage("A item must be selected");
+    	}
+    };
+    
+    //Get to clipboard URL of selected item
+    ActionListener copyURL = (event) -> {
+    	int position = items.getSelected();
+    	if(position>=0) {
+    		Item selectedItem = items.getItem(position);
+        	StringSelection selection = new StringSelection(selectedItem.getUrl());
+        	Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        	clipboard.setContents(selection, selection);
+    	} else {
+    		showMessage("A item must be selected");
+    	}
+    };
 
     /** Create a new dialog. */
     public Main() {
@@ -72,97 +189,30 @@ public class Main extends JFrame {
         createMsgBar();
     }
     
+    //Creates a custom menubar
     private void createMenubar() {
-    	menu = new JMenuBar();
-    	Menubar menuUtils = new Menubar();
     	
-    	JMenu app = menuUtils.menu("App", KeyEvent.VK_P);
-    	JMenuItem about = menuUtils.menuItem("About", KeyEvent.VK_A, "assets/helpBlue.png", (event) -> { 
-    		Dialogs.aboutDialog(this);
-    	}); 
-    	JMenuItem exit = menuUtils.menuItem("Exit", KeyEvent.VK_X, (event) -> { System.exit(0); });
+    	menu = new CustomMenubar(this);
+    	setJMenuBar(menu.getCustomMenu());
     	
-    	app.add(about); app.add(new JSeparator()); app.add(exit);
-    	
-    	JMenu item = menuUtils.menu("Item", KeyEvent.VK_I);
-    	JMenuItem checkPrices = menuUtils.menuItem("Check prices", KeyEvent.VK_C, "assets/checkBlue.png", (event) -> { System.out.println("Test"); });
-    	JMenuItem addItem = menuUtils.menuItem("Add Item", KeyEvent.VK_A, "assets/addBlue.png", (event) -> { 
-    		dialog = Dialogs.addItemDialog(this);
-    		dialog.setVisible(true);
-    	});
-    	JMenuItem searchItem = menuUtils.menuItem("Search", KeyEvent.VK_S, "assets/searchBlue.png", (event) -> { System.out.println("Test"); });
-    	JMenuItem firstItem = menuUtils.menuItem("Select first", KeyEvent.VK_F, "assets/backwardBlue.png", (event) -> { System.out.println("Test"); });
-    	JMenuItem lastItem = menuUtils.menuItem("Select last", KeyEvent.VK_L, "assets/forwardBlue.png", (event) -> { System.out.println("Test"); });
-    	
-    	JMenu selected = menuUtils.menu("selected", KeyEvent.VK_I);
-    	JMenuItem price = menuUtils.menuItem("Price", KeyEvent.VK_P, "assets/checkGreen.png", (event) -> { System.out.println("Test"); });
-    	JMenuItem view = menuUtils.menuItem("View", KeyEvent.VK_E, "assets/file.png", (event) -> { System.out.println("Test"); });
-    	JMenuItem edit = menuUtils.menuItem("Edit", KeyEvent.VK_R, "assets/editGreen.png", (event) -> { System.out.println("Test"); });
-    	JMenuItem remove = menuUtils.menuItem("Remove", KeyEvent.VK_F, "assets/minusGreen.png", (event) -> { Dialogs.confirmDialog(this); });
-    	JMenuItem copyName = menuUtils.menuItem("Copy Name", KeyEvent.VK_X, (event) -> { System.out.println("Test"); });
-    	JMenuItem copyURL = menuUtils.menuItem("Copy URL", KeyEvent.VK_X, (event) -> { System.out.println("Test"); });
-    	
-    	selected.add(price); selected.add(view); selected.add(edit);
-    	selected.add(remove); selected.add(new JSeparator()); selected.add(copyName); selected.add(copyURL);
-    	
-    	item.add(checkPrices); item.add(addItem); item.add(new JSeparator()); item.add(searchItem); 
-    	item.add(firstItem); item.add(lastItem); item.add(new JSeparator()); item.add(selected);
-    	
-    	JMenu sort = menuUtils.menu("Sort", KeyEvent.VK_S);
-    	JRadioButton sortOld =new JRadioButton("Added Oldest");    
-    	JRadioButton sortNew =new JRadioButton("Added Newest");
-    	JRadioButton sortNameDes =new JRadioButton("Name Descending");  
-    	JRadioButton sortNameAsc =new JRadioButton("Name Ascending");    
-    	JRadioButton priceChange =new JRadioButton("Price Change (%)");    
-    	JRadioButton priceLow =new JRadioButton("Price Low ($)");  
-    	JRadioButton priceHigh =new JRadioButton("Price High ($)");  
-    	
-    	ButtonGroup rb = new ButtonGroup();
-    	
-    	rb.add(sortOld); rb.add(sortNew); rb.add(sortNameDes); rb.add(sortNameAsc);
-    	rb.add(priceChange); rb.add(priceLow); rb.add(priceHigh);
-    	
-    	sort.add(sortOld); sort.add(sortNew); sort.add(new JSeparator()); 
-    	sort.add(sortNameDes); sort.add(sortNameAsc); sort.add(new JSeparator());
-    	sort.add(priceChange); sort.add(priceLow); sort.add(priceHigh);
-    	
-    	menu.add(app); menu.add(item); menu.add(sort);
-    	
-    	setJMenuBar(menu);
     }
     
+    //Creates a custom toolbar
+    //at the top of the app
     private void createToolbar() {
-    	toolbar = new Toolbar();
-		ActionListener test = (event) -> {
-			System.out.println("Test?");
-		};
-		toolbar.createButton("assets/checkBlue.png", test);
-		toolbar.createButton("assets/addBlue.png", test);
-		toolbar.createButton("assets/searchBlue.png", test);
-		toolbar.createButton("assets/backwardBlue.png", test);
-		toolbar.createButton("assets/forwardBlue.png", test);
+    	
+    	toolbar = new CustomToolbar(this);
+		add(toolbar.getCustomToolbar(), BorderLayout.NORTH);
 		
-		toolbar.addSeparator();
-		
-		toolbar.createButton("assets/checkGreen.png", test);
-		toolbar.createButton("assets/file.png", test);
-		toolbar.createButton("assets/editGreen.png", test);
-		toolbar.createButton("assets/minusGreen.png", test);
-		
-		toolbar.addSeparator();
-		
-		toolbar.createButton("assets/helpBlue.png", test);
-		
-		add(toolbar, BorderLayout.NORTH);
     }
     
+    //Creates a scrollable container to show list of items
+    //at the center of the app
     private void createContentContainer() {
     	contentContainer = new JPanel(); 
 		contentContainer.setLayout(new BoxLayout(contentContainer, BoxLayout.Y_AXIS));
-		contentContainer.setBackground(Color.BLACK);
-		
-		
-		
+		//contentContainer.setBackground(Color.BLACK);
+	
 		items = new ListUtils();
 		items.addItem(testItem);
 		items.addItem(testItem);
@@ -172,6 +222,7 @@ public class Main extends JFrame {
 		
     }
     
+    //Creates a messageBar at the button of the app
     private void createMsgBar() {
     	msgBar.setBorder(BorderFactory.createEmptyBorder(10,16,10,0));
         add(msgBar, BorderLayout.SOUTH);

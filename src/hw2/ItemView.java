@@ -34,18 +34,20 @@ public class ItemView extends JPanel {
     private ClickListener listener;
     
     /** Create a new instance. */
-    public ItemView(Item item) {
-    	this.item = item;
+    public ItemView() {
     	setPreferredSize(new Dimension(100, 160));
         setBackground(Color.WHITE);
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-            	System.out.println("Selected");
             	if (isViewPageClicked(e.getX(), e.getY()) && listener != null) {
             		listener.clicked();
             	}
             }
         });
+    }
+    
+    public void setItem(Item item) {
+    	this.item = item;
     }
         
     /** Set the view-page click listener. */
@@ -103,17 +105,12 @@ public class ItemView extends JPanel {
     	//--
     	return new Rectangle(20, 20, 30, 20).contains(x,  y);
     }
-    
-    private ImageIcon resizeIcon(ImageIcon icon) {
-		Image image = icon.getImage(); // transform it 
-		Image newimg = image.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
-		return new ImageIcon(newimg); 
-	}
         
     /** Return the image stored in the given file. */
     public Image getImage(String filePath) {
+    	Utils utils = new Utils();
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(filePath));
-    	imageIcon = resizeIcon(imageIcon);
+    	imageIcon = utils.resizeIcon(imageIcon);
     	Image img = imageIcon.getImage();
         return img;
     }
