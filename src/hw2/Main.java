@@ -41,7 +41,7 @@ public class Main extends JFrame {
     
     ListUtils items;
     
-    Item testItem = new Item("Macbook Pro", 2999.99, 2999.99, "http//google.com");
+    Item testItem = new Item("Macbook Pro", 2999.99, 2999.99, "https://www.google.com");
     
     //Actions performed in the UI
     
@@ -64,7 +64,7 @@ public class Main extends JFrame {
     //Show a dialog that will ask user information
     //about a new item to add to the list
     ActionListener addItem = (event) -> {
-    	dialog = Dialogs.itemDialog(this, items);
+    	dialog = Dialogs.itemDialog(this, items, -1);
     	dialog.setVisible(true);
     };
     
@@ -77,33 +77,24 @@ public class Main extends JFrame {
     
     //Select first item of the list
     ActionListener firstItem = (event) -> {
-    	items.setSelected(0);
+    	items.setFirst();
     };
     
     //Select last item of the list
     ActionListener lastItem = (event) -> {
-    	items.setSelected(items.getSize()-1);
+    	items.setLast();
     };
     
     //Update price of selected item
     ActionListener checkItemPrice = (event) -> {
-    	int position = items.getSelected();
-    	if(position>=0) {
-    		Item selectedItem = items.getItem(position);
-        	selectedItem.updatePrice();
-    	} else {
+    	if(!items.updateSelectedPrice()) {
     		showMessage("A item must be selected");
     	}
-    	
     };
     
     //Open browser to watch selected item
     ActionListener viewItem = (event) -> {
-    	int position = items.getSelected();
-    	if(position>=0) {
-    		Item selectedItem = items.getItem(position);
-        	selectedItem.launchBrowser();
-    	} else {
+    	if(!items.launchBrowserSelected()) {
     		showMessage("A item must be selected");
     	}
     };
@@ -112,7 +103,7 @@ public class Main extends JFrame {
     ActionListener editItem = (event) -> {
     	int position = items.getSelected();
     	if(position>=0) {
-    		dialog = Dialogs.itemDialog(this, items);
+    		dialog = Dialogs.itemDialog(this, items, position);
     		dialog.setVisible(true);
     	} else {
     		showMessage("A item must be selected");
@@ -221,12 +212,10 @@ public class Main extends JFrame {
     private void createContentContainer() {
     	contentContainer = new JPanel(); 
 		contentContainer.setLayout(new BoxLayout(contentContainer, BoxLayout.Y_AXIS));
-		//contentContainer.setBackground(Color.BLACK);
 	
 		items = new ListUtils();
 		items.addItem(testItem);
-		items.addItem(testItem);
-		contentContainer.add(items.getScrollComp(), BorderLayout.CENTER);
+		contentContainer.add(items, BorderLayout.CENTER);
 		
 		add(contentContainer, BorderLayout.CENTER);
 		

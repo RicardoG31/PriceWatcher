@@ -23,12 +23,12 @@ public class Dialogs {
 	
 	//Add item dialog
 	//Ask user information about the new item to add
-	public static JDialog itemDialog(JFrame c, ListUtils items) {
+	public static JDialog itemDialog(JFrame c, ListUtils items, int pos) {
 		JDialog dialog = new JDialog(c, "Add Item", false);
 		dialog.setSize(new Dimension(300, 200));
 		dialog.setLayout(new BorderLayout());
 		
-		JPanel form = new JPanel(new GridLayout(4,3));
+		JPanel form = new JPanel(new GridLayout(3,3));
 		
 		JLabel name = new JLabel("Name: ");
 		JTextField nameTextField = new JTextField();  
@@ -36,37 +36,39 @@ public class Dialogs {
 		JTextField urlTextField = new JTextField();
 		JLabel price = new JLabel("Price: ");
 		JTextField priceTextField = new JTextField();
-		JLabel group = new JLabel("Group: ");
-		JTextField groupTextField = new JTextField();
 		
-		int position = items.getSelected();
-		if(position >= 0) {
-			Item selectedItem = items.getItem(position);
+		if(pos >= 0) {
+			Item selectedItem = items.getItem(pos);
 			nameTextField.setText(selectedItem.getName());
 			urlTextField.setText(selectedItem.getUrl());
 			priceTextField.setText(Double.toString(selectedItem.getPrice()));
-			//groupTextField.setText(selectedItem.getName());
 		}
 
-		form.add(name); form.add(nameTextField); form.add(url); form.add(urlTextField);
-		form.add(price); form.add(priceTextField); form.add(group); form.add(groupTextField);
+		form.add(name); form.add(nameTextField); form.add(url); 
+		form.add(urlTextField); form.add(price); form.add(priceTextField);
 		
 		JPanel buttonsContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton add = new JButton("Add");
+		JButton edit = new JButton("Edit");
 		JButton cancel = new JButton("Cancel");
 		
 		add.addActionListener((event) -> {
 			String itemName = nameTextField.getText();
 			String itemURL = urlTextField.getText();
 			double itemPrice = Double.parseDouble(priceTextField.getText());
-			//String itemGroup = groupTextField.getText();
 			
 			Item newItem = new Item(itemName, itemPrice, itemPrice, itemURL);
-			if(position >= 0) {
-				items.updateItem(newItem, position);
-			} else {
-				items.addItem(newItem);
-			}
+			items.addItem(newItem);
+			dialog.setVisible(false);
+		});
+		
+		edit.addActionListener((event) -> {
+			String itemName = nameTextField.getText();
+			String itemURL = urlTextField.getText();
+			double itemPrice = Double.parseDouble(priceTextField.getText());
+			
+			Item newItem = new Item(itemName, itemPrice, itemPrice, itemURL);
+			items.updateItem(newItem, pos);
 			dialog.setVisible(false);
 		});
 		
@@ -74,7 +76,12 @@ public class Dialogs {
 			dialog.setVisible(false);
 		});
 		
-		buttonsContainer.add(add); buttonsContainer.add(cancel);
+		if(pos >= 0) {
+			buttonsContainer.add(edit);
+		} else {
+			buttonsContainer.add(add);
+		}
+		buttonsContainer.add(cancel);
 
 		dialog.add(form, BorderLayout.CENTER);
 		dialog.add(buttonsContainer, BorderLayout.SOUTH);
@@ -120,8 +127,7 @@ public class Dialogs {
 	public static void confirmRemoveDialog(JFrame c, ListUtils items) {
 		int resp = JOptionPane.showConfirmDialog(c, "Are you sure that you want to delete this item?");
 		if(resp == JOptionPane.YES_OPTION) {
-			int position = items.getSelected();
-			items.removeItem(position);
+			items.removeItem();
 		}
 	}
 	
