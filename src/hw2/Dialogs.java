@@ -94,30 +94,40 @@ public class Dialogs {
 	//Ask user for a term and filter list by elements that contain that list
 	public static JDialog searchItemDialog(JFrame c, ListUtils items) {
 		JDialog dialog = new JDialog(c, "Search Item", false);
-		dialog.setSize(new Dimension(300, 200));
+		dialog.setSize(new Dimension(300, 115));
 		dialog.setLayout(new BorderLayout());
 		
-		JPanel form = new JPanel(new GridLayout(2, 2));
+		JPanel form = new JPanel(new GridLayout(1, 2));
 		
 		JLabel searchLabel = new JLabel("Search: ");
 		JTextField searchTextField = new JTextField(); 
-		JButton searchButton = new JButton("Search");
-		JButton cancelButton = new JButton("Cancel");
 		
-		searchButton.addActionListener((event) -> {
+		form.add(searchLabel); form.add(searchTextField);
+		
+		JPanel btnContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JButton search = new JButton("Search");
+		JButton reset = new JButton("Reset");
+		JButton cancel = new JButton("Cancel");
+		
+		search.addActionListener((event) -> {
 			String term = searchTextField.getText();
+			items.resetList();
 			items.searchItems(term);
 			dialog.setVisible(false);
 		});
 		
-		cancelButton.addActionListener((event) -> {
+		reset.addActionListener((event) -> {
+			items.resetList();
+		});
+		
+		cancel.addActionListener((event) -> {
 			dialog.setVisible(false);
 		});
 		
-		form.add(searchLabel); form.add(searchTextField);
-		form.add(searchButton); form.add(cancelButton);
+		btnContainer.add(search); btnContainer.add(reset); btnContainer.add(cancel);
 		
 		dialog.add(form, BorderLayout.CENTER);
+		dialog.add(btnContainer, BorderLayout.SOUTH);
 		
 		return dialog;
 	}

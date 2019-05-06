@@ -3,11 +3,14 @@ package hw2;
 import java.awt.Component;
 
 import javax.swing.JList;
+import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
  
 
 //This class is used to render a custom view in the JList
 public class ItemRender extends ItemView implements ListCellRenderer<Item> {
+	
+	JPopupMenu menu;
  
     @Override
     public Component getListCellRendererComponent(JList<? extends Item> list, Item item, int index,

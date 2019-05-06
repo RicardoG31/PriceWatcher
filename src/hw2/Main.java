@@ -6,8 +6,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -22,7 +20,7 @@ import javax.swing.SwingUtilities;
 * A dialog for tracking the price of an item.
 *
 * @author Yoonsik Cheon
-*/
+**/
 @SuppressWarnings("serial")
 public class Main extends JFrame {
 
@@ -168,10 +166,10 @@ public class Main extends JFrame {
     private void configureUI() {
         setLayout(new BorderLayout());
         
-        setPopupMenu();
         createMenubar();
         createToolbar();
         createContentContainer();
+        setPopupMenu();
         createMsgBar();
     }
     
@@ -181,13 +179,15 @@ public class Main extends JFrame {
     	
     	JPopupMenu menu = popMenu.getCustomPopupMenu();
     	
-    	addMouseListener(new MouseAdapter() {
+    	items.setPopupMenu(menu);
+    	
+    	/*addMouseListener(new MouseAdapter() {
     		public void mouseClicked(MouseEvent e) {
     			menu.show(e.getComponent(), e.getX(), e.getY());
     		}
     	});
     	
-    	add(menu);
+    	add(menu);*/
     }
     
     //Creates a custom menubar

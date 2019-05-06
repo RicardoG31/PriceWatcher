@@ -1,14 +1,18 @@
 package hw2;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
 public class ListUtils extends JScrollPane {
 	
 	JList<Item>itemsList;
 	DefaultListModel<Item> items = new DefaultListModel<>();
-	DefaultListModel<Item> backup;
+	DefaultListModel<Item> backup = new DefaultListModel<>();;
 			
 	public ListUtils() {
 		itemsList = new JList<>(items);
@@ -34,22 +38,28 @@ public class ListUtils extends JScrollPane {
 	//Search all items that contain as a string (key) as substring
 	public void searchItems(String key) {
 		int listSize = items.getSize();
-		DefaultListModel<Item> filterList = new DefaultListModel<>();
-		if(key.length() == 0) {
-			this.items = this.backup;
-		} else {
-			this.backup = this.items;
-			for(int i=0; i<listSize; i++) {
-				Item item = items.get(i);
-				String itemName = item.getName();
-				if(itemName.indexOf(key) != -1) {
-					System.out.println("Here");
-					filterList.addElement(item);
-				}
+		for(int i=listSize-1; i>=0; i--) {
+			Item current = items.get(i);
+			backup.addElement(current);
+			if(current.getName().indexOf(key) == -1) {
+				items.remove(i);
 			}
-			this.items = filterList;
 		}
-		updateUI();
+	}
+	
+	//Reset all items
+	public void resetList() {
+		if(backup.getSize()>0) {
+			items.removeAllElements();	
+			
+			int listSize = backup.getSize();
+			for(int i=listSize-1; i>=0; i--) {
+				Item current = backup.get(i);
+				items.addElement(current);
+			}
+			backup.removeAllElements();
+		}
+		
 	}
 	
 	//Select first item in the list
@@ -107,6 +117,15 @@ public class ListUtils extends JScrollPane {
 	//Get selected item in the list
 	public int getSelected() {
 		return itemsList.getSelectedIndex();
+	}
+	
+	public void setPopupMenu(JPopupMenu menu) {
+		itemsList.addMouseListener(new MouseAdapter() {
+    		public void mouseClicked(MouseEvent e) {
+    			menu.show(e.getComponent(), e.getX(), e.getY());
+    		}
+    	});
+		itemsList.add(menu);
 	}
 	
 }
