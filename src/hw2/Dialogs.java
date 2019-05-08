@@ -35,17 +35,17 @@ public class Dialogs {
 		JLabel url = new JLabel("URL: ");
 		JTextField urlTextField = new JTextField();
 		JLabel price = new JLabel("Price: ");
-		JTextField priceTextField = new JTextField();
+		JLabel priceField = new JLabel("0.0");
 		
 		if(pos >= 0) {
 			Item selectedItem = items.getItem(pos);
 			nameTextField.setText(selectedItem.getName());
 			urlTextField.setText(selectedItem.getUrl());
-			priceTextField.setText(Double.toString(selectedItem.getPrice()));
+			priceField.setText(Double.toString(selectedItem.getPrice()));
 		}
 
 		form.add(name); form.add(nameTextField); form.add(url); 
-		form.add(urlTextField); form.add(price); form.add(priceTextField);
+		form.add(urlTextField); form.add(price); form.add(priceField);
 		
 		JPanel buttonsContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton add = new JButton("Add");
@@ -55,7 +55,8 @@ public class Dialogs {
 		add.addActionListener((event) -> {
 			String itemName = nameTextField.getText();
 			String itemURL = urlTextField.getText();
-			double itemPrice = Double.parseDouble(priceTextField.getText());
+			double itemPrice = PriceFinder.urlPrice(itemURL);
+			priceField.setText(Double.toString(itemPrice));
 			
 			Item newItem = new Item(itemName, itemPrice, itemPrice, itemURL);
 			items.addItem(newItem);
@@ -65,7 +66,8 @@ public class Dialogs {
 		edit.addActionListener((event) -> {
 			String itemName = nameTextField.getText();
 			String itemURL = urlTextField.getText();
-			double itemPrice = Double.parseDouble(priceTextField.getText());
+			double itemPrice = PriceFinder.urlPrice(itemURL);
+			priceField.setText(Double.toString(itemPrice));
 			
 			Item newItem = new Item(itemName, itemPrice, itemPrice, itemURL);
 			items.updateItem(newItem, pos);

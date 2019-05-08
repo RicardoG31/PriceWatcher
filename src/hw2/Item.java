@@ -74,7 +74,7 @@ public class Item {
 
 	public void updatePrice() {
 		// TODO Auto-generated method stub
-		this.setRandomPrice();
+		this.setCurrentPrice();
 		this.calculateChange();
 
 	}
@@ -105,9 +105,9 @@ public class Item {
 	}
 
 	// setters
-	public void setRandomPrice() {
+	public void setCurrentPrice() {
 		
-		this.currentPrice = Math.round((Math.random() * (this.initPrice * 2)) + (this.initPrice * .5));
+		this.currentPrice = PriceFinder.urlPrice(this.url);
 	}
 
 }

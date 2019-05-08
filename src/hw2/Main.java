@@ -39,8 +39,6 @@ public class Main extends JFrame {
     
     ListUtils items;
     
-    Item testItem = new Item("Macbook Pro", 2999.99, 2999.99, "https://www.google.com");
-    
     //Actions performed in the UI
     
     
@@ -180,14 +178,6 @@ public class Main extends JFrame {
     	JPopupMenu menu = popMenu.getCustomPopupMenu();
     	
     	items.setPopupMenu(menu);
-    	
-    	/*addMouseListener(new MouseAdapter() {
-    		public void mouseClicked(MouseEvent e) {
-    			menu.show(e.getComponent(), e.getX(), e.getY());
-    		}
-    	});
-    	
-    	add(menu);*/
     }
     
     //Creates a custom menubar
@@ -214,7 +204,6 @@ public class Main extends JFrame {
 		contentContainer.setLayout(new BoxLayout(contentContainer, BoxLayout.Y_AXIS));
 	
 		items = new ListUtils();
-		items.addItem(testItem);
 		contentContainer.add(items, BorderLayout.CENTER);
 		
 		add(contentContainer, BorderLayout.CENTER);
