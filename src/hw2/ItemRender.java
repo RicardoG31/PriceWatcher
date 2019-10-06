@@ -1,32 +1,29 @@
 package hw2;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JList;
-import javax.swing.JPopupMenu;
+import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
  
 
-//This class is used to render a custom view in the JList
-public class ItemRender extends ItemView implements ListCellRenderer<Item> {
-	
-	JPopupMenu menu;
+public class ItemRender extends JPanel implements ListCellRenderer<Item> {
  
     @Override
     public Component getListCellRendererComponent(JList<? extends Item> list, Item item, int index,
         boolean isSelected, boolean cellHasFocus) {
           
-    	setItem(item);
+    	setLayout(new BorderLayout());
+    	ItemView view = new ItemView(item);
     	
-    	if (isSelected) {
-    		
-            setBackground(list.getSelectionBackground());
-            setForeground(list.getSelectionForeground());
-            
-        } else {
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-        }
+    	if(isSelected) {
+    		view.setBackground(Color.BLACK);
+    	}
+    	
+    	add(view, BorderLayout.CENTER);
+         
         return this;
     }
     
